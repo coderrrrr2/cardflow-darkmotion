@@ -82,7 +82,7 @@ class LeadingText extends StatelessWidget {
     final theme = Theme.of(context);
     return Text(
       text,
-      style: theme.textTheme.displaySmall!.copyWith(
+      style: theme.textTheme.titleLarge!.copyWith(
         fontSize: fontSize,
         fontWeight: FontWeight.bold,
         color: color ?? Colors.white,

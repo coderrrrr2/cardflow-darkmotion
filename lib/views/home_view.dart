@@ -1,5 +1,7 @@
+import 'package:animation_practice1/shared/assets.dart';
 import 'package:animation_practice1/shared/shared_widgets.dart';
 import 'package:animation_practice1/views/widgets/header.dart';
+import 'package:animation_practice1/views/widgets/home_tile.dart';
 import 'package:animation_practice1/views/widgets/top_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -34,6 +36,12 @@ class _HomeViewState extends State<HomeView> {
                       isExpanded = p0;
                     });
                   },
+                ),
+                addHeightAnimated(isExpanded ? 200 : 30),
+                HomeTile(
+                  imagePath: tree,
+                  title: 'Emma Wallace',
+                  description: '13 photos',
                 ),
 
                 // ConstrainedBox(

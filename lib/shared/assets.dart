@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 String tree = "tree".png;
+String greenLeafs = "green_leafs".jpeg;
 
 //svg
 
@@ -11,6 +12,7 @@ String tree = "tree".png;
 
 extension ImageExtension on String {
   String get png => 'assets/pngs/$this.png';
+  String get jpeg => 'assets/pngs/$this.jpeg';
   String get svg => 'assets/svgs/$this.svg';
   String get json => 'assets/jsons/$this.json';
 

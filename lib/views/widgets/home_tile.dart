@@ -6,6 +6,7 @@ class HomeTile extends StatelessWidget {
   final String description;
   final VoidCallback? onTap;
   final String imagePath;
+
   const HomeTile({
     super.key,
     required this.title,
@@ -14,13 +15,28 @@ class HomeTile extends StatelessWidget {
     this.onTap,
   });
 
+  /// `copyWith` lets you clone a HomeTile with new parameters
+  HomeTile copyWith({
+    String? title,
+    String? description,
+    String? imagePath,
+    VoidCallback? onTap,
+  }) {
+    return HomeTile(
+      title: title ?? this.title,
+      description: description ?? this.description,
+      imagePath: imagePath ?? this.imagePath,
+      onTap: onTap ?? this.onTap,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        width: 400,
+        width: 900,
         height: 400,
         decoration: BoxDecoration(
           color: Colors.purple,
@@ -36,7 +52,7 @@ class HomeTile extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 25,
                   // backgroundImage: AssetImage("assets/images/avatar.png"),
                 ),
