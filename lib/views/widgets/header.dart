@@ -1,17 +1,21 @@
 import 'package:animation_practice1/shared/shared.dart';
+import 'package:animation_practice1/viewmodel/home_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Header extends StatefulWidget {
-  final bool isExpanded;
-  const Header({super.key, required this.isExpanded});
+class Header extends ConsumerStatefulWidget {
+  const Header({super.key});
 
   @override
-  State<Header> createState() => _HeaderState();
+  ConsumerState<Header> createState() => _HeaderState();
 }
 
-class _HeaderState extends State<Header> {
+class _HeaderState extends ConsumerState<Header> {
   @override
   Widget build(BuildContext context) {
+    final isCardExpanded = ref.watch(
+      homeProvider.select((state) => state.isCardExpanded),
+    );
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 600),
       switchInCurve: Curves.easeOut,
@@ -34,13 +38,11 @@ class _HeaderState extends State<Header> {
       },
       child: Align(
         alignment: Alignment.topCenter,
-        key: ValueKey(widget.isExpanded),
+        key: ValueKey(isCardExpanded),
         child: SizedBox(
           height: 100, // Ensure both versions take same vertical space
           child:
-              widget.isExpanded
-                  ? _buildExpandedHeader()
-                  : _buildCollapsedHeader(),
+              isCardExpanded ? _buildExpandedHeader() : _buildCollapsedHeader(),
         ),
       ),
     );
