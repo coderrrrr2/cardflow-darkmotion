@@ -65,8 +65,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             NavBarContainer(
-              beginWidth: isNavBarOpen ? 0 : 210,
-              endWidth: isNavBarOpen ? 0 : 210,
+              width: isNavBarOpen ? 0 : 210,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(60),
                 bottomLeft: Radius.circular(60),
@@ -105,8 +104,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar>
               ),
             ),
             NavBarContainer(
-              beginWidth: isNavBarOpen ? 0 : 210,
-              endWidth: isNavBarOpen ? 0 : 210,
+              width: isNavBarOpen ? 0 : 210,
               borderRadius: const BorderRadius.only(
                 topRight: Radius.circular(60),
                 bottomRight: Radius.circular(60),

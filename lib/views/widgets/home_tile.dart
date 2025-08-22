@@ -15,7 +15,6 @@ class HomeTile extends StatelessWidget {
     this.onTap,
   });
 
-  /// `copyWith` lets you clone a HomeTile with new parameters
   HomeTile copyWith({
     String? title,
     String? description,

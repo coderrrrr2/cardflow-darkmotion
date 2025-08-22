@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 class NavBarContainer extends StatelessWidget {
   final BorderRadiusGeometry borderRadius;
   final Widget child;
-  final double beginWidth;
-  final double endWidth;
+  final double width;
 
   const NavBarContainer({
     super.key,
-    required this.beginWidth,
-    required this.endWidth,
+    required this.width,
     required this.borderRadius,
     required this.child,
   });
@@ -19,7 +17,7 @@ class NavBarContainer extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
-      width: endWidth,
+      width: width,
       height: 68,
       decoration: BoxDecoration(
         color: const Color.fromRGBO(192, 192, 192, 1),

@@ -4,7 +4,7 @@ import 'package:animation_practice1/viewmodel/home_viewmodel.dart';
 import 'package:animation_practice1/views/widgets/header.dart';
 import 'package:animation_practice1/views/widgets/home_tile.dart';
 import 'package:animation_practice1/views/widgets/nav_bar.dart';
-import 'package:animation_practice1/views/widgets/top_slider.dart';
+import 'package:animation_practice1/views/widgets/card_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -86,26 +86,31 @@ class _HomeViewState extends ConsumerState<HomeView>
             ScaleTransition(
               scale: _scaleAnimation,
               alignment: Alignment.topCenter,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 30,
-                ).copyWith(top: paddingValue),
-                child: SingleChildScrollView(
-                  physics: const NeverScrollableScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Header(),
-                      addHeight(30),
-                      TopSlider(),
-                      addHeightAnimated(isCardExpanded ? 200 : 30),
-                      HomeTile(
+              child: SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 30,
+                      ).copyWith(top: paddingValue),
+                      child: Header(),
+                    ),
+                    addHeight(30),
+                    CardSlider(),
+                    addHeightAnimated(isCardExpanded ? 200 : 30),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 30,
+                      ).copyWith(top: paddingValue),
+                      child: HomeTile(
                         imagePath: tree,
                         title: 'Emma Wallace',
                         description: '13 photos',
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
