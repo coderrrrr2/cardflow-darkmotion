@@ -51,7 +51,7 @@ class _CardSliderState extends ConsumerState<CardSlider>
     super.initState();
 
     _swipeController = AnimationController(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 600),
       vsync: this,
     );
     _swipeAnimation = CurvedAnimation(
@@ -109,7 +109,6 @@ class _CardSliderState extends ConsumerState<CardSlider>
     final isCardExpanded = ref.watch(
       homeProvider.select((state) => state.isCardExpanded),
     );
-    print(allCards.map((e) => e.title).toList());
 
     return GestureDetector(
       onHorizontalDragEnd: (details) {

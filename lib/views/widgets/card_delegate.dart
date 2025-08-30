@@ -13,42 +13,110 @@ class ParallaxFlowDelegate extends FlowDelegate {
     this.isSwipingLeft = true,
   });
 
+  Offset _getBaseScale(double index) {
+    final List<Offset> baseScales = [
+      const Offset(0.9, 1.0),
+      const Offset(0.9, 0.94),
+      const Offset(0.9, 0.9),
+      const Offset(0.9, 0.88),
+    ];
+
+    if (index >= baseScales.length - 1) {
+      return baseScales.last;
+    }
+
+    final int floor = index.floor();
+    final double frac = index - floor;
+
+    final double baseX =
+        baseScales[floor].dx +
+        frac * (baseScales[floor + 1].dx - baseScales[floor].dx);
+    final double baseY =
+        baseScales[floor].dy +
+        frac * (baseScales[floor + 1].dy - baseScales[floor].dy);
+
+    return Offset(baseX, baseY);
+  }
+
   @override
   void paintChildren(FlowPaintingContext context) {
     final total = context.childCount;
     final size = context.size;
 
+    final double dir = isSwipingLeft ? -1.0 : 1.0;
+
+    int? incomingChildIndex;
+    if (swipeProgress > 0.0 && !isSwipingLeft) {
+      incomingChildIndex = total - 1;
+    }
+
     for (int i = 0; i < total; i++) {
       final childIndex = total - 1 - i;
+      final int indexFromTop = (total - 1 - i).clamp(0, total - 1);
 
-      final indexFromTop = (total - 1 - i).clamp(0, total - 1);
-      if (indexFromTop > 2) continue; // Only paint top 3 cards
+      if (indexFromTop > 2 && swipeProgress == 0.0) continue;
+      if (childIndex == incomingChildIndex) continue;
 
-      // Base X offset (for stacked look when expanded)
-      double dx = isCardExpanded ? offsetX * indexFromTop : 0.0;
-      double dy =
-          !isCardExpanded
-              ? 5
-              : indexFromTop * 20.0; // Vertical offset for stacking
+      double effective = indexFromTop.toDouble();
+      double opacity = 1.0;
 
-      // Apply swipe parallax offset
-      if (swipeProgress > 0.0) {
-        dx += _calculateSwipeOffset(indexFromTop, swipeProgress, size.width);
-        // Add parallax movement for Y position during swipe
-        dy += _calculateSwipeYOffset(indexFromTop, swipeProgress);
+      if (swipeProgress > 0.0 && !isSwipingLeft) {
+        effective = indexFromTop + swipeProgress;
+        if (indexFromTop == 2) {
+          opacity = 1.0 - swipeProgress;
+        }
       }
 
-      // Enhanced scaling with parallax progression
-      final scales = _calculateParallaxScales(indexFromTop, swipeProgress);
-      double scaleX = scales['scaleX']!;
-      double scaleY = scales['scaleY']!;
+      double dx = isCardExpanded ? offsetX * effective : 0.0;
+      double dy = !isCardExpanded ? 5.0 : effective * 20.0;
+
+      if (swipeProgress > 0.0 && isSwipingLeft) {
+        dx += _calculateSwipeOffset(
+          indexFromTop.toDouble(),
+          swipeProgress,
+          size.width,
+        );
+        dy += _calculateSwipeYOffset(indexFromTop.toDouble(), swipeProgress);
+      }
+
+      Map<String, double> scales;
+      if (isSwipingLeft) {
+        scales = _calculateParallaxScales(indexFromTop, swipeProgress);
+      } else {
+        final Offset base = _getBaseScale(effective);
+        scales = {'scaleX': base.dx, 'scaleY': base.dy};
+      }
+
+      final transform = Matrix4.translationValues(dx, dy, 0)
+        ..scale(scales['scaleX'], scales['scaleY']);
+
+      context.paintChild(childIndex, transform: transform, opacity: opacity);
+    }
+
+    if (incomingChildIndex != null) {
+      final childIndex = incomingChildIndex;
+      final double incomingDir = -dir; // Flip for from-left
+
+      final double dx = _calculateSwipeOffset(
+        0.0,
+        swipeProgress,
+        size.width,
+        incomingDir,
+      );
+      final double dy = _calculateSwipeYOffset(0.0, swipeProgress);
+
+      // Incoming starts large, shrinks to top base
+      const double baseX = 0.9;
+      const double baseY = 1.0;
+      const double growthX = -0.1;
+      const double growthY = -0.1;
+      final double scaleX = baseX - growthX * (1 - swipeProgress);
+      final double scaleY = baseY - growthY * (1 - swipeProgress);
 
       final transform = Matrix4.translationValues(dx, dy, 0)
         ..scale(scaleX, scaleY);
 
-      // Map to the correct child index to ensure proper z-order
-
-      context.paintChild(childIndex, transform: transform);
+      context.paintChild(childIndex, transform: transform, opacity: 1.0);
     }
   }
 
@@ -58,72 +126,47 @@ class ParallaxFlowDelegate extends FlowDelegate {
   ) {
     double scaleX = 1.0;
     double scaleY = 1.0;
-
     if (!isCardExpanded) {
       return {'scaleX': scaleX, 'scaleY': scaleY};
     }
 
-    // Base scales for each card depth
-    final baseScales = [
-      const Offset(0.9, 1.0), // Top card
-      const Offset(0.9, 0.94), // Second card
-      const Offset(0.9, 0.9), // Third card
+    final scales = _getBaseScale(indexFromTop.toDouble());
+    final List<Offset> growthFactors = [
+      const Offset(-0.1, -0.1),
+      const Offset(0.0, 0.05),
+      const Offset(0.05, 0.05),
     ];
 
-    // Growth multipliers (how much each card grows with swipe)
-    final growthFactors = [
-      const Offset(-0.1, -0.1), // Top card shrinks when swiping left
-      const Offset(0.0, 0.05), // Second card grows vertically
-      const Offset(0.05, 0.05), // Third card subtle growth
-    ];
+    final double scaleDir = isSwipingLeft ? 1.0 : -1.0;
 
-    // Clamp index (so if more than 3 cards, reuse last config)
-    final idx = indexFromTop.clamp(0, baseScales.length - 1);
+    final int idx = indexFromTop.clamp(0, growthFactors.length - 1);
 
-    final base = baseScales[idx];
-    final growth = growthFactors[idx];
+    final Offset growth = growthFactors[idx];
 
-    // Direction multiplier: -1 when swiping right, +1 when left
-    final dir = isSwipingLeft ? 1.0 : -1.0;
-
-    // Apply growth smoothly with swipeProgress
-    scaleX = base.dx + (growth.dx * swipeProgress * dir);
-    scaleY = base.dy + (growth.dy * swipeProgress * dir);
-
-    return {'scaleX': scaleX, 'scaleY': scaleY};
+    return {
+      'scaleX': scales.dx + (growth.dx * swipeProgress * scaleDir),
+      'scaleY': scales.dy + (growth.dy * swipeProgress * scaleDir),
+    };
   }
 
   double _calculateSwipeOffset(
-    int indexFromTop,
+    double indexFromTop,
     double progress,
-    double screenWidth,
-  ) {
-    // Parallax depth factor: top moves most, deeper cards less
+    double screenWidth, [
+    double? customDir,
+  ]) {
+    final dir = customDir ?? (isSwipingLeft ? -1.0 : 1.0);
     final depthFactor = 0.05 + (0.02 * indexFromTop);
-
-    // For both left and right swipes, use negative direction to ensure correct movement (left swipe: 0 to -max, right swipe: -max to 0)
-    final dir = -1.0;
-
-    // Top card moves full width, others move fractionally
     final maxShift =
         indexFromTop == 0 ? screenWidth : screenWidth * depthFactor;
-
-    // For swipe right, invert progress (since entering)
     final effectiveProgress = isSwipingLeft ? progress : (1.0 - progress);
-
     return dir * maxShift * effectiveProgress;
   }
 
-  double _calculateSwipeYOffset(int indexFromTop, double progress) {
+  double _calculateSwipeYOffset(double indexFromTop, double progress) {
     if (!isCardExpanded) return 0.0;
-
-    // Each deeper card moves up into previous card’s slot
-    // Y shift = -20 * progress * dir
     final dir = isSwipingLeft ? -1.0 : 1.0;
-
-    // Only cards deeper than the top should shift
     if (indexFromTop == 0) return 0.0;
-
     return dir * 20.0 * progress;
   }
 
