@@ -43,8 +43,12 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar>
     final isNavBarOpen = ref.watch(
       homeProvider.select((state) => state.isNavBarOpen),
     );
+    final notifier = ref.read(homeProvider.notifier);
 
-    // Sync circleController with isNavBarOpen
+    final isCardExpanded = ref.watch(
+      homeProvider.select((state) => state.isCardExpanded),
+    );
+
     ref.listen<bool>(homeProvider.select((state) => state.isNavBarOpen), (
       previous,
       next,
@@ -77,15 +81,25 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar>
                       padding: const EdgeInsets.only(left: 10, right: 30),
                       child: CircleAvatar(
                         radius: 25,
-                        backgroundColor: Colors.white,
+                        backgroundColor:
+                            isCardExpanded
+                                ? const Color.fromRGBO(192, 192, 192, 1)
+                                : Colors.white,
                         child: IconButton(
                           visualDensity: VisualDensity.compact,
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.home,
                             size: 26,
-                            color: Color.fromARGB(255, 34, 51, 182),
+                            color:
+                                isCardExpanded
+                                    ? Colors.black
+                                    : Color.fromARGB(255, 34, 51, 182),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            if (isCardExpanded) {
+                              notifier.toggleExpanded(null);
+                            }
+                          },
                         ),
                       ),
                     ),
@@ -230,7 +244,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar>
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 3),
                     spreadRadius: 6,

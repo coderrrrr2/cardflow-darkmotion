@@ -13,6 +13,8 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
+        appBarTheme: AppBarTheme(backgroundColor: Colors.black),
+        scaffoldBackgroundColor: Colors.black,
         fontFamily: 'Helvetica', // 👈 This applies Helvetica app-wide
         textTheme: TextTheme(
           bodyLarge: TextStyle(fontWeight: FontWeight.normal),

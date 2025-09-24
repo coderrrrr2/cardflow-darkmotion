@@ -10,8 +10,18 @@ class HomeNotifier extends Notifier<HomeState> {
     return const HomeState();
   }
 
-  void toggleExpanded() {
-    state = state.copyWith(isCardExpanded: !state.isCardExpanded);
+  void toggleExpanded(int? sectionIndex) {
+    // if (state.isCardExpanded && state.expandedSectionIndex == sectionIndex) {
+    //   // Collapse same card
+    //   state = state.copyWith(isCardExpanded: false, expandedSectionIndex: null);
+    // } else {
+    //   // Expand new card
+
+    // }
+    state = state.copyWith(
+      isCardExpanded: !state.isCardExpanded,
+      expandedSectionIndex: sectionIndex,
+    );
   }
 
   void toggleNavBarOpen() {
@@ -22,15 +32,27 @@ class HomeNotifier extends Notifier<HomeState> {
 class HomeState {
   final bool isCardExpanded;
   final bool isNavBarOpen;
-  const HomeState({this.isCardExpanded = false, this.isNavBarOpen = false});
+  final int? expandedSectionIndex;
+
+  const HomeState({
+    this.isCardExpanded = false,
+    this.isNavBarOpen = false,
+    this.expandedSectionIndex,
+  });
 
   @override
-  int get hashCode => Object.hash(isCardExpanded, isNavBarOpen);
+  int get hashCode =>
+      Object.hash(isCardExpanded, isNavBarOpen, expandedSectionIndex);
 
-  HomeState copyWith({bool? isCardExpanded, bool? isNavBarOpen}) {
+  HomeState copyWith({
+    bool? isCardExpanded,
+    bool? isNavBarOpen,
+    int? expandedSectionIndex,
+  }) {
     return HomeState(
       isCardExpanded: isCardExpanded ?? this.isCardExpanded,
       isNavBarOpen: isNavBarOpen ?? this.isNavBarOpen,
+      expandedSectionIndex: expandedSectionIndex,
     );
   }
 
@@ -38,6 +60,7 @@ class HomeState {
   bool operator ==(Object other) {
     return other is HomeState &&
         other.isCardExpanded == isCardExpanded &&
-        other.isNavBarOpen == isNavBarOpen;
+        other.isNavBarOpen == isNavBarOpen &&
+        other.expandedSectionIndex == expandedSectionIndex;
   }
 }

@@ -1,74 +1,76 @@
+import 'package:animation_practice1/model/home_tile_data.dart';
 import 'package:animation_practice1/shared/shared.dart';
 import 'package:flutter/material.dart';
 
 class HomeTile extends StatelessWidget {
-  final String title;
-  final String description;
-  final VoidCallback? onTap;
-  final String imagePath;
+  final HomeTileData data;
+  final VoidCallback? onCardTap;
+  final VoidCallback? onAvatarTap;
 
   const HomeTile({
     super.key,
-    required this.title,
-    required this.description,
-    required this.imagePath,
-    this.onTap,
+    required this.data,
+    this.onCardTap,
+    this.onAvatarTap,
   });
 
   HomeTile copyWith({
-    String? title,
-    String? description,
-    String? imagePath,
-    VoidCallback? onTap,
+    Key? key,
+    HomeTileData? data,
+    VoidCallback? onCardTap,
+    VoidCallback? onAvatarTap,
   }) {
     return HomeTile(
-      title: title ?? this.title,
-      description: description ?? this.description,
-      imagePath: imagePath ?? this.imagePath,
-      onTap: onTap ?? this.onTap,
+      key: key ?? this.key,
+      data: data ?? this.data,
+      onCardTap: onCardTap ?? this.onCardTap,
+      onAvatarTap: onAvatarTap ?? this.onAvatarTap,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: onCardTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         width: 900,
         height: 400,
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.purple,
           image: DecorationImage(
-            image: AssetImage(imagePath),
+            image: AssetImage(data.imagePath),
             fit: BoxFit.cover,
           ),
           borderRadius: BorderRadius.circular(30),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const CircleAvatar(
-                  radius: 25,
-                  // backgroundImage: AssetImage("assets/images/avatar.png"),
+                GestureDetector(
+                  onTap: onAvatarTap,
+                  child: const CircleAvatar(
+                    radius: 27,
+                    // backgroundImage: AssetImage("assets/images/avatar.png"),
+                  ),
                 ),
                 addWidth(20),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppText(
-                      text: title,
-                      fontSize: 16,
+                      text: data.title,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
+                    addHeight(5),
                     AppText(
-                      text: description,
-                      fontSize: 12,
+                      text: data.description,
+                      fontSize: 15,
                       color: Colors.white70,
                     ),
                   ],
