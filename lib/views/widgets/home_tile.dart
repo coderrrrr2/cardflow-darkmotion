@@ -7,11 +7,15 @@ class HomeTile extends StatelessWidget {
   final VoidCallback? onCardTap;
   final VoidCallback? onAvatarTap;
 
+  /// New: allows parent (CardSlider) to wrap this widget in Hero or other transitions
+  final Widget Function(Widget child)? childWrapper;
+
   const HomeTile({
     super.key,
     required this.data,
     this.onCardTap,
     this.onAvatarTap,
+    this.childWrapper,
   });
 
   HomeTile copyWith({
@@ -19,18 +23,20 @@ class HomeTile extends StatelessWidget {
     HomeTileData? data,
     VoidCallback? onCardTap,
     VoidCallback? onAvatarTap,
+    Widget Function(Widget child)? childWrapper,
   }) {
     return HomeTile(
       key: key ?? this.key,
       data: data ?? this.data,
       onCardTap: onCardTap ?? this.onCardTap,
       onAvatarTap: onAvatarTap ?? this.onAvatarTap,
+      childWrapper: childWrapper ?? this.childWrapper,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    Widget card = GestureDetector(
       onTap: onCardTap,
       child: Container(
         width: 900,
@@ -52,9 +58,9 @@ class HomeTile extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: onAvatarTap,
-                  child: const CircleAvatar(
+                  child: CircleAvatar(
                     radius: 27,
-                    // backgroundImage: AssetImage("assets/images/avatar.png"),
+                    backgroundImage: AssetImage(data.userImage),
                   ),
                 ),
                 addWidth(20),
@@ -81,5 +87,8 @@ class HomeTile extends StatelessWidget {
         ),
       ),
     );
+
+    // If a wrapper (e.g., Hero) is provided, wrap it around the card
+    return childWrapper != null ? childWrapper!(card) : card;
   }
 }

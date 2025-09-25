@@ -9,6 +9,19 @@ String greenLeafsTwo = "green_leafs2".jpeg;
 String purpleGreenLeafs = "purple_green_leafs".webp;
 String whiteGreenLeafs = "white_green_leafs".jpg;
 String desertDunes = "desert_dune".jpg;
+String birdPicture = "bird_picture".jpg;
+String forest = "forest".jpg;
+String person1 = "P1".jpeg;
+String person2 = "P2".jpeg;
+String person3 = "P3".jpeg;
+String person4 = "P4".jpeg;
+String person5 = "P5".jpeg;
+String rf1 = "rf_1".jpg;
+String rf2 = "rf_2".jpeg;
+String rf3 = "rf_3".jpeg;
+String rf4 = "rf_4".jpeg;
+String r5 = "rf_5".jpeg;
+String r6 = "rf_6".jpg;
 
 //svg
 
