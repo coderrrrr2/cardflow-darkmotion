@@ -9,11 +9,11 @@ final Random _random = Random();
 final Map<String, String> titles = {
   tree: 'Emma Wallace',
   greenLeafsTwo: 'Harry Sans',
-  greenLeafs: 'Garden Views',
-  purpleGreenLeafs: 'Forest Trail',
-  desertDunes: 'Desert Dunes',
-  birdPicture: 'Feathered Grace',
-  forest: 'Forest',
+  greenLeafs: 'Liam Carter',
+  purpleGreenLeafs: 'Sophia Bennett',
+  desertDunes: 'Noah Mitchell',
+  birdPicture: 'Ava Thompson',
+  forest: 'Ethan Ross',
 };
 
 /// Descriptions for variety

@@ -76,7 +76,6 @@ class _HomeViewState extends ConsumerState<HomeView>
     });
   }
 
-  /// Single unified rule for header visibility
   bool _shouldShowHeader(int? expandedIndex, double scrollOffset) {
     final isExpanded = expandedIndex != null;
     final isAtTop = scrollOffset <= _scrollThreshold;
@@ -90,6 +89,16 @@ class _HomeViewState extends ConsumerState<HomeView>
     if (_showHeader != shouldShow) {
       setState(() => _showHeader = shouldShow);
     }
+  }
+
+  double get topPadding {
+    // 0.85 -> 1.0
+    // When fully scaled (1.0) padding = 0
+    // When scaled down (0.85) padding = desired offset
+    const double maxPadding = 90; // adjust based on header height
+    final t =
+        (_scaleAnimation.value - 0.85) / (1.0 - 0.85); // normalized 0 -> 1
+    return maxPadding * (1 - t); // 60 -> 0
   }
 
   void _onScroll() {
@@ -167,66 +176,71 @@ class _HomeViewState extends ConsumerState<HomeView>
             ScaleTransition(
               scale: _scaleAnimation,
               alignment: Alignment.topCenter,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Flexible(
-                    child: CustomScrollView(
-                      controller: _scrollController,
-                      slivers: [
-                        // Animated top spacing (replaces addHeightAnimated + Column spacer)
-                        if (_showHeader)
-                          SliverToBoxAdapter(
-                            child: AnimatedContainer(
-                              duration: const Duration(
-                                milliseconds: 400,
-                              ), // Match card expansion duration
-                              curve: Curves.easeInOut,
-                              height:
-                                  (expandedSectionIndex ==
-                                          0) // Special handling for first card
-                                      ? 160 // Reduced height when first card expands
-                                      : (expandedSectionIndex ==
-                                          allHomeSections.length - 1)
-                                      ? 0
-                                      : state.isCardExpanded
-                                      ? 160
-                                      : 200,
+              child: Padding(
+                padding: EdgeInsets.only(top: topPadding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      child: CustomScrollView(
+                        controller: _scrollController,
+                        slivers: [
+                          if (_showHeader)
+                            SliverToBoxAdapter(
+                              child: AnimatedContainer(
+                                duration: const Duration(
+                                  milliseconds: 400,
+                                ), // Match card expansion duration
+                                curve: Curves.easeInOut,
+                                height:
+                                    (expandedSectionIndex ==
+                                            0) // Special handling for first card
+                                        ? 160 // Reduced height when first card expands
+                                        : (expandedSectionIndex ==
+                                            allHomeSections.length - 1)
+                                        ? 0
+                                        : state.isCardExpanded
+                                        ? 160
+                                        : 200,
+                              ),
                             ),
+
+                          // Your list of cards
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              return Container(
+                                key: cardKeys[index],
+                                margin: EdgeInsets.only(
+                                  top: index == 0 ? 0 : 8,
+                                  bottom:
+                                      index == allHomeSections.length - 1
+                                          ? 40
+                                          : 8,
+                                ),
+                                child: CardSlider(
+                                  section: allHomeSections[index],
+                                  index: index,
+                                  isLastCard:
+                                      index == allHomeSections.length - 1,
+                                  expandedIndex: expandedSectionIndex,
+                                  totalCards: allHomeSections.length,
+                                ),
+                              );
+                            }, childCount: allHomeSections.length),
                           ),
 
-                        // Your list of cards
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            return Container(
-                              key: cardKeys[index],
-                              margin: EdgeInsets.only(
-                                top: index == 0 ? 0 : 8,
-                                bottom:
-                                    index == allHomeSections.length - 1
-                                        ? 40
-                                        : 8,
-                              ),
-                              child: CardSlider(
-                                section: allHomeSections[index],
-                                index: index,
-                                isLastCard: index == allHomeSections.length - 1,
-                                expandedIndex: expandedSectionIndex,
-                                totalCards: allHomeSections.length,
-                              ),
-                            );
-                          }, childCount: allHomeSections.length),
-                        ),
-
-                        // Bottom safe space (replaces ListView padding.bottom)
-                        const SliverToBoxAdapter(child: SizedBox(height: 100)),
-                      ],
+                          // Bottom safe space (replaces ListView padding.bottom)
+                          const SliverToBoxAdapter(
+                            child: SizedBox(height: 100),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Positioned(

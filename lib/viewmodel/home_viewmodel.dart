@@ -25,7 +25,10 @@ class HomeNotifier extends Notifier<HomeState> {
   }
 
   void toggleNavBarOpen() {
-    state = state.copyWith(isNavBarOpen: !state.isNavBarOpen);
+    state = state.copyWith(
+      isNavBarOpen: !state.isNavBarOpen,
+      expandedSectionIndex: state.expandedSectionIndex,
+    );
   }
 }
 
