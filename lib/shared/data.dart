@@ -93,14 +93,22 @@ final List<HomeSection> allHomeSections =
 
       // Build the 4 sections
       return List.generate(4, (sectionIndex) {
+        // Assign one consistent user image for this section
+        String sectionUser = people[_random.nextInt(people.length)];
+
         // Create a fresh pool of images for this section
         List<String> pool = List.of(allImages)..shuffle(_random);
 
         // Reserve unique first image
         pool.remove(uniqueFirstImages[sectionIndex]);
-        List<HomeTileData> cards = generateRandomCards(pool, sectionIndex);
+        List<HomeTileData> cards =
+            generateRandomCards(pool, sectionIndex)
+                .map(
+                  (card) => card.copyWith(userImage: sectionUser),
+                ) // ✅ enforce same user
+                .toList();
 
-        // Insert the guaranteed unique first card with proper fields
+        // Insert the guaranteed unique first card with the same user
         cards[0] = HomeTileData(
           key:
               '${uniqueFirstImages[sectionIndex]}_${sectionIndex}_${_random.nextInt(10000)}',
@@ -108,7 +116,7 @@ final List<HomeSection> allHomeSections =
           title: titles[uniqueFirstImages[sectionIndex]] ?? 'Untitled',
           description:
               descriptions[uniqueFirstImages[sectionIndex]] ?? '0 photos',
-          userImage: people[_random.nextInt(people.length)],
+          userImage: sectionUser, // ✅ same user for all cards
           location:
               locations[uniqueFirstImages[sectionIndex]] ?? 'Unknown Location',
           detailsDescription:

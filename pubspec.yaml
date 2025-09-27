@@ -7,6 +7,7 @@ environment:
   sdk: ^3.7.2
 
 dependencies:
+  animations: ^2.0.11
   card_swiper: ^3.0.1
   flutter:
     sdk: flutter
@@ -24,20 +25,19 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
   assets:
+    # IMPORTANT: Make sure you list your fonts directory in assets!
+    - assets/fonts/
     - assets/pngs/
+
   fonts:
-  - family: Helvetica
-    fonts:
-      - asset: assets/fonts/Helvetica.ttf
-      - asset: assets/fonts/Helvetica-Bold.ttf
-        weight: 700
-      - asset: assets/fonts/Helvetica-Oblique.ttf
-        style: italic
-      - asset: assets/fonts/Helvetica-BoldOblique.ttf
-        weight: 700
-        style: italic
-      - asset: assets/fonts/helvetica-light-587ebe5a59211.ttf
-        weight: 300
-      - asset: assets/fonts/helvetica-compressed-5871d14b6903a.otf
-      - asset: assets/fonts/helvetica-rounded-bold-5871d05ead8de.otf
+    - family: Formula
+      fonts:
+        # FormulaCondensed Light (Weight 300)
+        - asset: assets/fonts/FormulaCondensed-Light.otf
+          weight: 300 
+          
+        # FormulaCondensed Bold (Weight 700)
+        - asset: assets/fonts/FormulaCondensed-Bold.otf
+          weight: 700 

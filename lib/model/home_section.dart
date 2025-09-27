@@ -1,9 +1,9 @@
 import 'package:animation_practice1/model/home_tile_data.dart';
 
 class HomeSection {
-  final List<HomeTileData> cardList; // List of HomeTile data
+  final List<HomeTileData> cardList;
   final String location;
-  final List<String> detailsCard; // List of image paths
+  final List<String> detailsCard;
 
   HomeSection({
     required this.cardList,

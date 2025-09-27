@@ -10,82 +10,71 @@ class Header extends ConsumerStatefulWidget {
   ConsumerState<Header> createState() => _HeaderState();
 }
 
-class _HeaderState extends ConsumerState<Header> with TickerProviderStateMixin {
+class _HeaderState extends ConsumerState<Header> {
   @override
   Widget build(BuildContext context) {
     final isCardExpanded = ref.watch(
       homeProvider.select((state) => state.isCardExpanded),
     );
 
-    return AnimatedSize(
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-      alignment: Alignment.topCenter,
-      child: AnimatedCrossFade(
-        duration: const Duration(milliseconds: 500),
-        firstCurve: Curves.easeInOut,
-        secondCurve: Curves.easeInOut,
-        sizeCurve: Curves.easeInOut,
-        alignment: Alignment.topCenter,
-        crossFadeState:
-            isCardExpanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-        firstChild: _slideWrapper(
-          _buildCollapsedHeader(),
-          fromTop: true,
-          goingToExpanded: isCardExpanded,
-        ),
-        secondChild: _slideWrapper(
-          _buildExpandedHeader(),
-          fromTop: false,
-          goingToExpanded: !isCardExpanded,
-        ),
+    return SizedBox(
+      height: !isCardExpanded ? 160 : 80,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Collapsed Header
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            top: isCardExpanded ? -100 : 0,
+            left: 0,
+            right: 0,
+            child: AnimatedOpacity(
+              opacity: isCardExpanded ? 0 : 1,
+              duration: const Duration(milliseconds: 300),
+              child: AnimatedScale(
+                alignment: Alignment.topLeft,
+                scale: isCardExpanded ? 0.8 : 1.0, // shrink when leaving
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                child: _buildCollapsedHeader(const ValueKey("collapsed")),
+              ),
+            ),
+          ),
+
+          // Expanded Header
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            top: isCardExpanded ? 0 : 100,
+            left: 0,
+            right: 0,
+            child: AnimatedOpacity(
+              opacity: isCardExpanded ? 1 : 0,
+              duration: const Duration(milliseconds: 300),
+              child: AnimatedScale(
+                alignment: Alignment.bottomRight,
+
+                scale: isCardExpanded ? 1.0 : 0.8, // grow when entering
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                child: _buildExpandedHeader(const ValueKey("expanded")),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  /// fromTop: where the widget is initially coming from
-  /// goingToExpanded: true if this transition is happening because we are expanding
-  Widget _slideWrapper(
-    Widget child, {
-    required bool fromTop,
-    required bool goingToExpanded,
-  }) {
-    final controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    )..forward();
-
-    // Determine slide direction based on expanding/collapsing
-    final beginOffset =
-        goingToExpanded
-            ? (fromTop ? const Offset(0, -1) : const Offset(0, 1))
-            : (fromTop ? const Offset(0, 1) : const Offset(0, -1));
-
-    final offsetTween = Tween<Offset>(
-      begin: beginOffset,
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: controller, curve: Curves.easeOut));
-
-    final fadeTween = CurvedAnimation(
-      parent: controller,
-      curve: Curves.easeInOut,
-    );
-
-    return SlideTransition(
-      position: offsetTween,
-      child: FadeTransition(opacity: fadeTween, child: child),
-    );
-  }
-
-  Widget _buildCollapsedHeader() {
+  Widget _buildCollapsedHeader(ValueKey key) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      key: key,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppText(text: "SUNDAY, SEPTEMBER 7", fontSize: 13, color: Colors.grey),
-        addHeight(15),
+        addHeight(10),
         LeadingText(text: "For You"),
         addHeight(10),
         Row(
@@ -101,18 +90,23 @@ class _HeaderState extends ConsumerState<Header> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildExpandedHeader() {
+  Widget _buildExpandedHeader(ValueKey key) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      key: key,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        addHeightAnimated(5),
         Row(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppText(text: "COLLECTIONS", fontSize: 16, color: Colors.grey),
+                AppText(
+                  text: "COLLECTIONS",
+                  fontSize: 16,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w100,
+                ),
                 addHeight(4),
                 LeadingText(text: "Plants"),
               ],

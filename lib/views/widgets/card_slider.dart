@@ -11,7 +11,7 @@ class CardSlider extends ConsumerStatefulWidget {
   final int index;
   final bool isLastCard;
   final int? expandedIndex; // Add this to know which card is expanded
-  final int totalCards; // Add this to know total number of cards
+  final int totalCards;
 
   const CardSlider({
     super.key,
@@ -132,108 +132,99 @@ class _CardSliderState extends ConsumerState<CardSlider>
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 400),
             height: isCardExpanded ? 610 : 400,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 400),
-
-              curve: Curves.easeInOutBack,
-              height: isCardExpanded ? 610 : 400,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: AnimatedBuilder(
-                animation: _swipeAnimation,
-                builder: (context, child) {
-                  return Flow(
-                    delegate: ParallaxFlowDelegate(
-                      isCardExpanded: isCardExpanded,
-                      offsetX: 20,
-                      swipeProgress: _isAnimating ? _swipeAnimation.value : 0.0,
-                      isSwipingLeft: _isSwipingLeft,
-                    ),
-                    children:
-                        allCards
-                            .map(
-                              (e) => e.copyWith(
-                                onAvatarTap: () {
-                                  Navigator.of(context).push(
-                                    PageRouteBuilder(
-                                      transitionDuration: const Duration(
-                                        milliseconds: 400,
-                                      ),
-                                      pageBuilder:
-                                          (
-                                            context,
-                                            animation,
-                                            secondaryAnimation,
-                                          ) => CardDetailView(
-                                            section: widget.section,
-                                            index: widget.index,
-                                            homeTile: e,
-                                          ),
-                                      transitionsBuilder: (
-                                        context,
-                                        animation,
-                                        secondaryAnimation,
-                                        child,
-                                      ) {
-                                        // Slide in from bottom
-                                        final offsetAnimation = Tween<Offset>(
-                                          begin: const Offset(0, 1),
-                                          end: Offset.zero,
-                                        ).animate(
-                                          CurvedAnimation(
-                                            parent: animation,
-                                            curve: Curves.easeOutCubic,
-                                          ),
-                                        );
-
-                                        // Fade in/out (tied only to the forward animation)
-                                        final fadeAnimation = Tween<double>(
-                                          begin: 0.0,
-                                          end: 1.0,
-                                        ).animate(
-                                          CurvedAnimation(
-                                            parent: animation,
-                                            curve: Curves.easeInOut,
-                                          ),
-                                        );
-
-                                        return SlideTransition(
-                                          position: offsetAnimation,
-                                          child: FadeTransition(
-                                            opacity: fadeAnimation,
-                                            child:
-                                                child, // 👈 only detail page is animated
-                                          ),
-                                        );
-                                      },
+            child: AnimatedBuilder(
+              animation: _swipeAnimation,
+              builder: (context, child) {
+                return Flow(
+                  delegate: ParallaxFlowDelegate(
+                    isCardExpanded: isCardExpanded,
+                    offsetX: 20,
+                    swipeProgress: _isAnimating ? _swipeAnimation.value : 0.0,
+                    isSwipingLeft: _isSwipingLeft,
+                  ),
+                  children:
+                      allCards
+                          .map(
+                            (e) => e.copyWith(
+                              onAvatarTap: () {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    transitionDuration: const Duration(
+                                      milliseconds: 400,
                                     ),
-                                  );
-                                },
-                                onCardTap: () {
-                                  final isExpanded =
-                                      ref.read(homeProvider).isCardExpanded;
-                                  if (isExpanded) {
-                                    ref
-                                        .read(homeProvider.notifier)
-                                        .toggleExpanded(null);
-                                  } else {
-                                    ref
-                                        .read(homeProvider.notifier)
-                                        .toggleExpanded(widget.index);
-                                  }
-                                },
-                                childWrapper:
-                                    (child) => Hero(
-                                      tag: 'card_${e.data.key}',
-                                      child: child,
-                                    ),
-                              ),
-                            )
-                            .toList(),
-                  );
-                },
-              ),
+                                    pageBuilder:
+                                        (
+                                          context,
+                                          animation,
+                                          secondaryAnimation,
+                                        ) => CardDetailView(
+                                          section: widget.section,
+                                          index: widget.index,
+                                          homeTile: e,
+                                        ),
+                                    transitionsBuilder: (
+                                      context,
+                                      animation,
+                                      secondaryAnimation,
+                                      child,
+                                    ) {
+                                      // Slide in from bottom
+                                      final offsetAnimation = Tween<Offset>(
+                                        begin: const Offset(0, 1),
+                                        end: Offset.zero,
+                                      ).animate(
+                                        CurvedAnimation(
+                                          parent: animation,
+                                          curve: Curves.easeOutCubic,
+                                        ),
+                                      );
+
+                                      // Fade in/out (tied only to the forward animation)
+                                      final fadeAnimation = Tween<double>(
+                                        begin: 0.0,
+                                        end: 1.0,
+                                      ).animate(
+                                        CurvedAnimation(
+                                          parent: animation,
+                                          curve: Curves.easeInOut,
+                                        ),
+                                      );
+
+                                      return SlideTransition(
+                                        position: offsetAnimation,
+                                        child: FadeTransition(
+                                          opacity: fadeAnimation,
+                                          child:
+                                              child, // 👈 only detail page is animated
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              onCardTap: () {
+                                final isExpanded =
+                                    ref.read(homeProvider).isCardExpanded;
+                                if (isExpanded) {
+                                  ref
+                                      .read(homeProvider.notifier)
+                                      .toggleExpanded(null);
+                                } else {
+                                  ref
+                                      .read(homeProvider.notifier)
+                                      .toggleExpanded(widget.index);
+                                }
+                              },
+                              childWrapper:
+                                  (child) => Hero(
+                                    tag: 'card_${e.data.key}',
+                                    child: child,
+                                  ),
+                            ),
+                          )
+                          .toList(),
+                );
+              },
             ),
           ),
         ),

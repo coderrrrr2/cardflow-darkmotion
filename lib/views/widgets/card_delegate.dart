@@ -84,7 +84,7 @@ class ParallaxFlowDelegate extends FlowDelegate {
         }
 
         double dx = isCardExpanded ? offsetX * effective : 0.0;
-        double dy = !isCardExpanded ? 5.0 : effective * 20.0;
+        double dy = !isCardExpanded ? 0.0 : effective * 20.0;
 
         final Offset base = _getBaseScale(effective);
         Map<String, double> scales = {'scaleX': base.dx, 'scaleY': base.dy};
@@ -144,7 +144,7 @@ class ParallaxFlowDelegate extends FlowDelegate {
         if (indexFromTop == 0) {
           // The top card simply swipes off-screen
           dx = _calculateSwipeOffset(0, swipeProgress, size.width);
-          dy = !isCardExpanded ? 5.0 : 0;
+          dy = isCardExpanded ? indexFromTop * 20.0 : 0.0;
           final startScale = _getBaseScale(0);
           // It shrinks as it moves away
           scaleX =
@@ -167,8 +167,8 @@ class ParallaxFlowDelegate extends FlowDelegate {
           final endDx = isCardExpanded ? offsetX * targetIndex : 0.0;
           dx = lerpDouble(startDx, endDx, swipeProgress)!;
 
-          final startDy = !isCardExpanded ? 5.0 : currentIndex * 20.0;
-          final endDy = !isCardExpanded ? 5.0 : targetIndex * 20.0;
+          final startDy = !isCardExpanded ? 0 : currentIndex * 20.0;
+          final endDy = !isCardExpanded ? 0 : targetIndex * 20.0;
           dy = lerpDouble(startDy, endDy, swipeProgress)!;
         }
       } else {
@@ -177,7 +177,7 @@ class ParallaxFlowDelegate extends FlowDelegate {
         scaleX = scales.dx;
         scaleY = scales.dy;
         dx = isCardExpanded ? offsetX * indexFromTop : 0.0;
-        dy = !isCardExpanded ? 5.0 : indexFromTop * 20.0;
+        dy = !isCardExpanded ? 0 : indexFromTop * 20.0;
       }
 
       final transform = Matrix4.translationValues(dx, dy, 0)

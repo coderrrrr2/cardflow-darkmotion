@@ -39,8 +39,8 @@ class HomeTile extends StatelessWidget {
     Widget card = GestureDetector(
       onTap: onCardTap,
       child: Container(
-        width: 900,
-        height: 400,
+        width: double.infinity,
+        height: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.purple,

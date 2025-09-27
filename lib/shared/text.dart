@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart'; // 👈 Import the Google Fonts package
 
 class AppText extends StatelessWidget {
   final String text;
@@ -40,17 +41,30 @@ class AppText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    // If you haven't set a default theme text style (e.g., in MaterialApp),
+    // it's best to use GoogleFonts.workSans() to create the base style.
+
+    // Define the custom base style using the Google Font
+    final TextStyle customBaseStyle = GoogleFonts.figtree(
+      textStyle:
+          Theme.of(
+            context,
+          ).textTheme.displaySmall, // Inherit size/spacing properties if needed
+      color: Colors.white,
+      fontWeight: FontWeight.w400,
+    );
 
     return Text(
       text,
       style:
           style ??
-          theme.textTheme.displaySmall!.copyWith(
-            color: color ?? Colors.white,
+          customBaseStyle.copyWith(
+            // Apply your custom overrides to the new base font
+            color:
+                color, // The base style sets it to white, but null here allows the custom color to override it, or keeps the base if 'color' is null.
             fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
             fontSize: fontSize,
-            fontWeight: fontWeight ?? FontWeight.w400,
+            fontWeight: fontWeight,
           ),
       textAlign: textAlign,
       textDirection: textDirection,
@@ -82,7 +96,8 @@ class LeadingText extends StatelessWidget {
     final theme = Theme.of(context);
     return Text(
       text,
-      style: theme.textTheme.titleLarge!.copyWith(
+
+      style: theme.textTheme.headlineLarge!.copyWith(
         fontSize: fontSize,
         fontWeight: FontWeight.bold,
         color: color ?? Colors.white,

@@ -105,6 +105,17 @@ class _HomeViewState extends ConsumerState<HomeView>
     _updateHeaderVisibility();
   }
 
+  bool get isScaling => _scaleController.isAnimating;
+
+  bool get isScaledDown => _scaleController.value < 1.0;
+
+  double scalingSpacerHeight(bool isCardExpanded) {
+    // Map 0.85 → 100px spacer, 1.0 → 0px spacer
+    final double maxSpacer = isCardExpanded ? 15 : 40;
+    final t = (_scaleAnimation.value - 0.85) / (1.0 - 0.85); // normalize 0–1
+    return maxSpacer * (1 - t);
+  }
+
   @override
   void dispose() {
     _scaleController.dispose();
@@ -185,6 +196,12 @@ class _HomeViewState extends ConsumerState<HomeView>
                       child: CustomScrollView(
                         controller: _scrollController,
                         slivers: [
+                          SliverToBoxAdapter(
+                            child: SizedBox(
+                              height: scalingSpacerHeight(state.isCardExpanded),
+                            ),
+                          ),
+
                           if (_showHeader)
                             SliverToBoxAdapter(
                               child: AnimatedContainer(
@@ -195,7 +212,7 @@ class _HomeViewState extends ConsumerState<HomeView>
                                 height:
                                     (expandedSectionIndex ==
                                             0) // Special handling for first card
-                                        ? 160 // Reduced height when first card expands
+                                        ? 130 // Reduced height when first card expands
                                         : (expandedSectionIndex ==
                                             allHomeSections.length - 1)
                                         ? 0
@@ -261,12 +278,15 @@ class _HomeViewState extends ConsumerState<HomeView>
                             : CrossFadeState.showFirst,
                     firstChild: const Align(
                       alignment: Alignment.centerLeft,
-                      child: Text(
-                        'For you',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: 12),
+                        child: Text(
+                          'For you',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
